@@ -250,7 +250,7 @@ Function.prototype.throttle=function(fn,time){
     flag = false;
     setTimeout(()=>{
       fn.apply(context,args)
-      flag =true
+      flag = true
     },time)
   }
 }
@@ -301,7 +301,7 @@ Function.prototype.bind = function(context,...args){
 Function.prototype.call=function(context,...args){
   let context = context || window
   context.fn = this
-  let result = eval(`context.fn(...args)`)  
+  let result = eval(`context.fn(${args})`)  
   delete context.fn
   return result 
 }
@@ -310,7 +310,7 @@ Function.prototype.call=function(context,...args){
 Function.prototype.apply =function(context,args){
   let context = context ||window
   context.fn = this
-  let result = eval(`context.fn(...args)`)
+  let result = eval(`context.fn(${args})`)
   delete context.fn
   return result
 }
@@ -359,10 +359,10 @@ EventEmitter.prototype.myRemoveAll=function(type){
 }
 
 //21 emitter.emit
-EventEmitter.prototype.emit =function(type,...arg){
-  let handler = this.events.get(handler)
+EventEmitter.prototype.emit =function(type,...args){
+  let handler = this.events.get(type)
   if(Array.isArray(handler)){
-    handler.forEach((index,item)=>{
+    handler.forEach((item)=>{
       item.callback.apply(this,args)
       if(item.once) this.removeEventListener(type,item)
 
@@ -379,21 +379,20 @@ EventEmitter.prototype.once = function(type,fn){
 }
 
 //23 vDom
-function vDom(tagName,props,childern){
+function vDom(tagName,props,children){
   this.tagName = tagName;
   this.props = props;
-  this,childern = childern;
+  this,children = children;
   if(props.key){
     this.key = props.key
   }
   let count = 0
-  childern.map((index,child)=>{
+  children.map((index,child)=>{
     if(child instanceof Element){
         count += child.length
     }else{
-        childern[i]= ''+count
+        children[index]= ''+count
     }
-    count++
   })
   this.count = count
 }
@@ -480,7 +479,6 @@ function limit(count, array, iterateFunc) {
 
 //27 图片懒加载IntersectionObserver---也可用作其他资源的预加载
 let img = document.getElementsByTagName("img");
-
 const observer = new IntersectionObserver(changes => {
   //changes 是被观察的元素集合
   for(let i = 0, len = changes.length; i < len; i++) {
@@ -494,3 +492,30 @@ const observer = new IntersectionObserver(changes => {
   }
 })
 observer.observe(img);
+
+
+//28 reduce原理实现
+function myReduce(fn,initialValue){
+  if(typeof fn !== 'function'){
+    throw new Error('the first params must be function')
+  }
+  let arr = this
+  let result = initialValue|| arr[0]
+  let startIndex = initialValue?0:1
+  for(let i = startIndex;i<arr.length;i++){
+    result = fn(result,arr[i],i,arr)
+  }
+  return result 
+}
+
+//29 mixin 原理
+function mixin(target, props){
+    let result = target
+    target.prototype = Object.create(result.props)  
+    for(let i in props){
+        if(props.hasOwnProperty(props[i])){
+            target.prototype[i] = props[i]
+        }
+    }
+    return result
+}

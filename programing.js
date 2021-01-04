@@ -349,10 +349,21 @@ function sort(list) {
 }
 
 //14 数组乱序
-
+//不够优秀
 function sortInMess(arr){
   return arr.sort(()=>Math.random()-0.5)
 }
+//数组乱序最优解
+function shuffle(arr) {
+    let m = arr.length;
+    while (m > 1){
+        let index = Math.floor(Math.random() * m--);
+        [arr[m] , arr[index]] = [arr[index] , arr[m]]
+    }
+    return arr;
+}
+
+
 
 //15 数组去重
 
