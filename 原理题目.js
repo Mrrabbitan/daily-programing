@@ -54,7 +54,7 @@ function resolvePromise(promise,x,resolve,reject){
 myPromise.prototype.then=function(onf,onr){
     let bridge 
     let onFulfilled =typeof onf === 'function' ? onf:value =>value
-    let onRejected = typeof inr === 'function' ? onr: error=>{throw new Error} 
+    let onRejected = typeof inr === 'function' ? onr: error=>{throw error} 
     if(this.status === p){
         return bridge = new Promise((resolve,reject)=>{
             this.onFulfilledCallback.push((value)=>{
@@ -231,13 +231,41 @@ Promise.prototype.retry = function(fn,times,delay){
                 reject(error)
             }else{
                 fn().then(resolve).catch(function(e){
+                  while(times){
                     times--;
                     error = e
                     setTimeout(function(){attempt()},delay)
+                  }
                 })
             }
         }
         attempt();
+    })
+}
+
+// 保证顺序
+myPromise.prototype.myAny = function(iterable){
+    return new Promise((resolve,reject)=>{
+        let len = iterable.length;
+        let result = []
+        if(len ===0){
+            resolve([])
+            return
+        }
+        function handleData(index,data){
+            let temp = {}
+            temp["i"] = index
+            temp["data"] = data
+            result.push(temp)
+            if(len = result.length) return resolve(result.sort((a,b)=>a.i-b.i).map(item=>item.data))
+        }
+        for(let [index,item] of iterable.entries()){
+            Promise.resolve(item).then((data)=>{
+                return resolve(data)
+            }).catch((error)=>{
+                handleData(index,error)
+            })        
+        }
     })
 }
 
@@ -336,6 +364,7 @@ EventEmitter.prototype.addEventListener = function(type,fn,once =false){
 // 19 removeListener
 EventEmitter.prototype.removeListener = function(type,listener){
   let handler = this.events.get(type)
+  if(!handler) return
   if(!Array.isArray(handler)){
     if(handler.callback === listener.callback) this.events.delete(type)
   }
@@ -412,8 +441,8 @@ function render(){
     ele.setAttribute(i,props[i])
   }
 
-  let childern = this.childern||[]
-  childern.map((index,child)=>{
+  let children = this.children||[]
+  children.forEach((index,child)=>{
     let childEle = (child instanceof Element)?child.render():document.createTextNode(child)
     ele.appendChild(childEle) 
   })
@@ -511,11 +540,57 @@ function myReduce(fn,initialValue){
 //29 mixin 原理
 function mixin(target, props){
     let result = target
-    target.prototype = Object.create(result.props)  
-    for(let i in props){
-        if(props.hasOwnProperty(props[i])){
-            target.prototype[i] = props[i]
+    result.prototype = Object.create(target.prototype)  
+    for(let index in props){
+        if(props.hasOwnProperty(index)){
+            result.prototype[index] = props[index]
         }
     }
     return result
+}
+
+//30、xhr模拟实现get，post方法
+function handleParams(data){
+  let arr = []
+  for(let i in arr){
+    //转义为二进制码的内容
+    arr.push(encodeURIComponent(i)+'='+encodeURIComponent(arr[i]))
+  }
+  return arr.join('&')
+}
+
+function callback(opt,obj){
+  let status = obj.status
+  if(status>=200&&status<=300){
+    opt.success&&opt.success(obj.responseText,obj.responseXML)
+  }else{
+    opt.fail && opt.fail(status)
+  }
+}
+
+
+function myAjax(url,option){
+  let option = option||{}
+  let method = (option.method || 'GET').toUpperCase(),
+      async = option.async?option.async:true,
+      params = handleParams(option.data)
+  let xhr = new XMLHttpRequest()
+  if(async){
+    xhr.onreadystatechange = function(){
+      if(this.readyState===4){
+        callback(option,xhr)
+      }
+    }
+  }
+  if(method==='GET'){
+    xhr.open('GET',url+'?'+params,async)
+    xhr.send(null)
+  }if(method==='SEND'){
+    xhr.open('SEND',url,async)
+    xhr.setRequestHeader('content-type','multipart/form-data')
+    xhr.send(params)
+  }
+  if(!async){
+    callback(option,xhr)
+  }
 }

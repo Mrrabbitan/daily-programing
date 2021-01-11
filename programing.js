@@ -464,6 +464,11 @@ function composeFunctions(){
   
 }
 
+//最优解
+ function compose(...funcs) {
+  return funcs.reduce((a, b) => (...args) => a(b(...args)))
+}
+
 //22 实现instanceof
 
 function myInstanceof(left,right){
@@ -621,13 +626,13 @@ Function.prototype.myJSONP = function(params,url,callback){
       dataStr+=`${index}=${params[index]}&`
     }
     dataStr += `callback=${callback}`
-    return `${url}?${params}`
+    return `${url}?${dataStr}`
   }
   return new Promise((resolve,reject)=>{
     let ele = document.createElement('script')
     ele.src = getParams()
     document.body.appendChild(ele)
-    window[callback??[]]=(data)=>{
+    window[callback??'']=(data)=>{
       resolve(data)
       document.body.removeChild(ele)
     }

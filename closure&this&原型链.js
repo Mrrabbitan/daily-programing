@@ -21,7 +21,8 @@ f3.call(obj);//1
 
 
 //2 closure and this
-//2-1
+// this 的指向并不是在创建的时候就可以确定的，是在调用的时候确定的
+//2-1this 永远指向最后调用它的那个对象
 var a = 3;
 var obj = { 
   a: 5,
