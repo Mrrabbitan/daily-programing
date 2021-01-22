@@ -16,7 +16,7 @@ const f3 = setFn();
 const obj = {x: 10};
 
 f3.call(obj);//1
-
+//没有this输出不改变指向
 
 
 

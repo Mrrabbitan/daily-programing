@@ -140,3 +140,50 @@ float:right;
 width:200px;
 background:red;
 }
+
+<!-- 4 两条外边框border的实现 -->
+<!-- 方法一 boxshadow的方法 -->
+
+background: yellowgreen;
+box-shadow: 0 0 0 10px #655, 0 0 0 15px deeppink;
+
+<!-- 方法二 outline和border结合 -->
+
+background: yellowgreen;
+border: 10px solid #655;
+outline: 15px solid deeppink;
+
+<!--5 flex在RN与web中的区别 -->
+
+direction
+(1) Web 端
+需要设置 display: flex
+主轴方向默认水平向右。
+RN 端默认值为 row。
+(2) RN 端
+元素的 display 属性取值为 flex 和 none，默认为 flex。
+主轴方向默认竖直向下。
+RN 端默认值为 column。
+
+flex-wrap
+RN 端属性取值没有 wrap-reverse。
+
+align-item
+(1) Web 端
+baseline 项目的第一行文字的基线对齐
+(2) RN 端
+RN 端 baseline 属性值的表现为项目底边对齐。
+
+align-content
+(1) Web 端
+stretch（默认值）轴线占满整个交叉轴。
+(2) RN 端
+RN 端默认属性值为 flex-start。
+
+flex
+RN 端与 Web 端差异
+(1) flex 属性的表现与 Web 端不同，取值只能为数字。
+(2) flex 属性并不简单是 flex-grow/shrink/basis 的简化
+(3) flex 默认值为 0，表示项目保持原始尺寸，且总是不可伸缩。
+(4) 若 flex 取值为-1，则表示项目保持原始尺寸，但当容器尺寸不够时，缩小到 minWidth 或 minHeight。
+(5) 若 flex 取值为 n(n>=1)，则按照 flex 值的比例分配剩余空间，剩余空间指的是容器尺寸减去 flex 值为 0 或-1 项目的尺寸。

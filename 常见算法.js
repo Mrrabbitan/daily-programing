@@ -399,19 +399,33 @@ function flat(arr,deep){
   return result
 }
 
-//17 filter 
-function filter(fn,context){
-  let result = []
-  let arr = this
-  for(let i=0;i<len;i++){
-    let item = fn.apply(context,arr[i],arr,i)
-    if(item){
-      result.push(arr[i])
-    }
+
+
+//17 节流
+Function.prototype.throttle=function(fn,time){
+  let flag  = true
+  return function(...args){
+    let context = this
+    if(!flag ) return 
+    flag = false;
+    setTimeout(()=>{
+      fn.apply(context,args)
+      flag = true
+    },time)
   }
-  return result
 }
 
+//18 防抖
+Function.prototype.debounce = function(fn,delay){
+  let timer = null;
+  return function(...args){
+    let context = this
+    if(timer) clearTimeout(timer)
+    timer=setTimeout(()=>{
+      fn.apply(context,args)
+    },delay)
+  }
+}
 
 
 //19 先乱序，后排序找到缺失的那条数据
@@ -431,20 +445,12 @@ function find(arr){
 
 console.log(find([2,4,3,7,6]))
 
-//20、 链表的遍历
 
-const c = { value: 4, left: null, right: null }
-const d = { value: 5, left: null, right: null }
-const e = { value: 6, left: null, right: null }
-const f = { value: 7, left: null, right: null }
-const a = { value: 2, left: c, right: d }
-const b = { value: 3, left: e, right: f}
-const root = { value: 1, left: a, right: b }
 
 
 
 /**
- * 21. 实现一个方法，可将多个函数方法按从左到右的方式组合运行。 
+ * 20. 实现一个方法，可将多个函数方法按从左到右的方式组合运行。 
  * 如 composeFunctions(fn1,fn2,fn3,fn4) 等价于 fn4(fn3(fn2(fn1)) 
  * 示例： 
  * const add = x => x + 1;
@@ -453,37 +459,12 @@ const root = { value: 1, left: a, right: b }
  * multiplyAdd(3, 4) // 返回 13
  */
 
-function composeFunctions(){
- let args = Array.prototype.slice.apply(arguments)
-  return function(){
-  		if(args.length===1){
-    		return args[0].apply(this,Array.prototype.slice.apply(arguments))  
-    	}
-  		return composeFunctions(...args.slice(1))(args[0].apply(this,Array.prototype.slice.apply(arguments)))
-  }
-  
-}
-
 //最优解
  function compose(...funcs) {
   return funcs.reduce((a, b) => (...args) => a(b(...args)))
 }
 
-//22 实现instanceof
 
-function myInstanceof(left,right){
-    var proto = left.__proto__;
-    var protoType = right.prototype;
-    while(true){
-        if(proto === null){
-            return false
-        }
-        if(proto == protoType){
-            return true
-        }
-        proto = proto.__proto__
-    }
-}
 
 //23 curry
 function curry(func) {
@@ -533,25 +514,11 @@ const sleep = function(min){
 }
 
 
-//26 promisify
-
-function Promisify(fn,context){
-    return (...args)=>{
-        return new Promise((resolve,reject)=>{
-            fn.apply(context,[...args,(err,res)=>{
-                return err? reject(err):resolve(res)
-            }])
-        })
-    }
-}
-
-
 //27 deepclone
-
 
 function deepCopy(obj, cache = new WeakMap()) {
   if (!obj instanceof Object) return obj
-  // 防止循环引用
+  // 防止循环引用 深拷贝成环的问题（解决循环引用）
   if (cache.get(obj)) return cache.get(obj)
   // 支持函数
   if (obj instanceof Function) {
@@ -596,29 +563,9 @@ source.source = source
 const newObj = deepCopy(source)
 console.log(newObj.meta.ary[2] === source.meta.ary[2]);
 
-//28+ 深拷贝成环的问题（解决循环引用）
-const isObject = (target) => (typeof target === 'object' || typeof target === 'function') && target !== null;
 
-const deepClone = (target, map = new Map()) => { 
-  if(map.get(target))  
-    return target; 
- 
- 
-  if (isObject(target)) { 
-    map.set(target, true); 
-    const cloneTarget = Array.isArray(target) ? []: {}; 
-    for (let prop in target) { 
-      if (target.hasOwnProperty(prop)) { 
-          cloneTarget[prop] = deepClone(target[prop],map); 
-      } 
-    } 
-    return cloneTarget; 
-  } else { 
-    return target; 
-  } 
-}
 
-//29 JSONP
+//28 JSONP 返回的是一个Promise
 Function.prototype.myJSONP = function(params,url,callback){
   function getParams(){
     let dataStr = ''
@@ -639,7 +586,7 @@ Function.prototype.myJSONP = function(params,url,callback){
   })
 }
 
-//30 实现n的链式调用
+//29 实现n的链式调用
  let n = func.add(2).add(3).reduce(1); 
 
 console.log(n); // 4 
