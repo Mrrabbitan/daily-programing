@@ -466,7 +466,7 @@ console.log(find([2,4,3,7,6]))
 
 
 
-//23 curry
+//21 curry
 function curry(func) {
   return function curried(...args) {
     // 关键知识点：function.length 用来获取函数的形参个数
@@ -491,7 +491,7 @@ console.log(curriedSum(1)(2)(3))
 
 
 
-//24 记忆函数
+//22 记忆函数
 const memorize = function(fn) {   
    const cache = {}       
   // 存储缓存数据的对象    
@@ -504,7 +504,7 @@ const memorize = function(fn) {   
     } 
 }
 
-//25 sleep函数
+//23 sleep函数
 const sleep = function(min){
   return new Promise((resolve,reject)=>{
     setTimeout(()=>{
@@ -514,7 +514,7 @@ const sleep = function(min){
 }
 
 
-//27 deepclone
+//24 deepclone
 
 function deepCopy(obj, cache = new WeakMap()) {
   if (!obj instanceof Object) return obj
@@ -565,7 +565,7 @@ console.log(newObj.meta.ary[2] === source.meta.ary[2]);
 
 
 
-//28 JSONP 返回的是一个Promise
+//25 JSONP 返回的是一个Promise
 Function.prototype.myJSONP = function(params,url,callback){
   function getParams(){
     let dataStr = ''
@@ -586,7 +586,7 @@ Function.prototype.myJSONP = function(params,url,callback){
   })
 }
 
-//29 实现n的链式调用
+//26 实现n的链式调用
  let n = func.add(2).add(3).reduce(1); 
 
 console.log(n); // 4 

@@ -280,3 +280,29 @@ function Promisify(fn,context){
         })
     }
 }
+
+//14 allSettled 完整版
+Promise.allSettled = function(promises) {
+    // 也可以使用扩展运算符将 Iterator 转换成数组
+    // const promiseArr = [...promises]
+    const promiseArr = Array.from(promises)
+    return new Promise(resolve => {
+        const result = []
+        const len = promiseArr.length;
+        let count = len;
+        if (len === 0) {
+          return resolve(result);
+        }
+        for (let i = 0; i < len; i++) {
+            promiseArr[i].then((value) => {
+                result[i] = { status: 'fulfilled', value: value };
+            }, (reason) => {
+                result[i] = { status: 'rejected', reason: reason };
+            }).finally(() => { 
+                if (!--count) {
+                    resolve(result);
+                }
+            });
+        }
+    });
+}

@@ -51,7 +51,7 @@ Function.prototype.bind = function(context,...args){
   let self = this
   let fOne = function(){}
   let fTwo =function(){
-    self.apply(this instanceof fOne?this:context,args.concat(Array.prototype.slice.apply(context,arguments)) )
+    return  self.apply(this instanceof fOne?this:context,args.concat(Array.prototype.slice.apply(context,arguments)) )
   }
 
   fOne.prototype = self.prototype
@@ -263,7 +263,7 @@ function myReduce(fn,initialValue){
   let result = initialValue|| arr[0]
   let startIndex = initialValue?0:1
   for(let i = startIndex;i<arr.length;i++){
-    result = fn(result,arr[i],i,arr)
+    result = fn.call(result,arr[i],i,arr)
   }
   return result 
 }
@@ -355,6 +355,7 @@ function asyncToGenerator(generatorFunc) {
           let generatorResult
           try {
             generatorResult = gen[key](arg)
+            value = generatorResult.value
           } catch (error) {
             return reject(error)
           }
@@ -365,7 +366,7 @@ function asyncToGenerator(generatorFunc) {
             return Promise.resolve(value).then(val => step('next', val), err => step('throw', err))
           }
         }
-        step("next")
+       return step("next")
       })
     }
 }
